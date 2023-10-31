@@ -1,0 +1,1 @@
+. "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators/deactivate_conanbuildenv-release-armv8.sh"

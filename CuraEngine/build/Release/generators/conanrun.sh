@@ -1,0 +1,1 @@
+. "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators/conanrunenv-release-armv8.sh"

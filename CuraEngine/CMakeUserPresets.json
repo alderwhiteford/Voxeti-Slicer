@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators/CMakePresets.json"
+    ]
+}
