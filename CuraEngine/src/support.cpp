@@ -551,7 +551,7 @@ Polygons AreaSupport::join(const SliceDataStorage& storage, const Polygons& supp
             adhesion_size = 0;
             break;
         default: // Also use 0.
-            spdlog::info("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
+            ("Unknown platform adhesion type! Please implement the width of the platform adhesion here.");
             break;
         }
         machine_volume_border = machine_volume_border.offset(-adhesion_size);

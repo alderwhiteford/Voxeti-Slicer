@@ -3,7 +3,7 @@ set(CMAKE_HOST_SYSTEM_NAME "Darwin")
 set(CMAKE_HOST_SYSTEM_VERSION "22.5.0")
 set(CMAKE_HOST_SYSTEM_PROCESSOR "arm64")
 
-include("/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators/conan_toolchain.cmake")
+include("/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release/generators/conan_toolchain.cmake")
 
 set(CMAKE_SYSTEM "Darwin-22.5.0")
 set(CMAKE_SYSTEM_NAME "Darwin")

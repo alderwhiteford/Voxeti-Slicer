@@ -21,12 +21,12 @@ std::shared_ptr<grpc::Channel> createChannel(const ChannelSetupConfiguration& co
     {
         if (config.host == "localhost" || config.host == "127.0.0.1")
         {
-            spdlog::info("Create local channel on port {}.", config.port);
+            ("Create local channel on port {}.", config.port);
             return grpc::InsecureChannelCredentials();
         }
         if (details::ALLOW_REMOTE_CHANNELS)
         {
-            spdlog::info("Create local channel on port {}.", config.port);
+            ("Create local channel on port {}.", config.port);
             auto creds_config = grpc::SslCredentialsOptions();
             creds_config.pem_root_certs = resources::certificate;
             return grpc::SslCredentials(creds_config);

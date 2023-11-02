@@ -97,8 +97,6 @@ bool FffPolygonGenerator::sliceModel(MeshGroup* meshgroup, TimeKeeper& timeKeepe
     storage.model_max = meshgroup->max();
     storage.model_size = storage.model_max - storage.model_min;
 
-    spdlog::info("Slicing model...");
-
     const Settings& mesh_group_settings = Application::getInstance().current_slice->scene.current_mesh_group->settings;
 
     // regular layers
@@ -782,7 +780,6 @@ void FffPolygonGenerator::removeEmptyFirstLayers(SliceDataStorage& storage, size
 
     if (n_empty_first_layers > 0)
     {
-        spdlog::info("Removing {} layers because they are empty", n_empty_first_layers);
         const coord_t layer_height = Application::getInstance().current_slice->scene.current_mesh_group->settings.get<coord_t>("layer_height");
         for (auto& mesh_ptr : storage.meshes)
         {

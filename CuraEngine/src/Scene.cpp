@@ -78,7 +78,7 @@ void Scene::processMeshGroup(MeshGroup& mesh_group)
     if (empty)
     {
         Progress::messageProgress(Progress::Stage::FINISH, 1, 1); // 100% on this meshgroup
-        spdlog::info("Total time elapsed {:3}s.", time_keeper_total.restart());
+        ("Total time elapsed {:3}s.", time_keeper_total.restart());
         return;
     }
 
@@ -94,7 +94,7 @@ void Scene::processMeshGroup(MeshGroup& mesh_group)
     Progress::messageProgress(Progress::Stage::FINISH, 1, 1); // 100% on this meshgroup
     Application::getInstance().communication->flushGCode();
     Application::getInstance().communication->sendOptimizedLayerData();
-    spdlog::info("Total time elapsed {:3}s.\n", time_keeper_total.restart());
+    ("Total time elapsed {:3}s.\n", time_keeper_total.restart());
 }
 
 } // namespace cura

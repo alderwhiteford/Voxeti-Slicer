@@ -179,56 +179,19 @@ void Application::slice()
     communication = new CommandLine(arguments);
 }
 
-void Application::run(const size_t argc, char** argv)
-{
-    this->argc = argc;
-    this->argv = argv;
-
-    printLicense();
+void Application::run(const char* settings, FILE* file, const char* type) {
+    // Initialize command line progress:
     Progress::init();
 
-    if (argc < 2)
-    {
-        printHelp();
-        exit(1);
-    }
+    // Create a new communication object and add the settings to the arguments:
 
-#ifdef ARCUS
-    if (stringcasecompare(argv[1], "connect") == 0)
-    {
-        connect();
-    }
-    else
-#endif // ARCUS
-        if (stringcasecompare(argv[1], "slice") == 0)
-        {
-            slice();
-        }
-        else if (stringcasecompare(argv[1], "help") == 0)
-        {
-            printHelp();
-        }
-        else
-        {
-            spdlog::error("Unknown command: {}", argv[1]);
-            printCall();
-            printHelp();
-            exit(1);
-        }
+    communication = new CommandLine(settings, file, type);
 
-    if (! communication)
-    {
-        // No communication channel is open any more, so either:
-        //- communication failed to connect, or
-        //- the engine was called with an unknown command or a command that doesn't connect (like "help").
-        // In either case, we don't want to slice.
-        exit(0);
-    }
-    startThreadPool(); // Start the thread pool
-    while (communication->hasSlice())
-    {
-        communication->sliceNext();
-    }
+    // Start the threadpool:
+    startThreadPool(); 
+    
+    // Begin slicing:
+    communication->sliceNext();
 }
 
 void Application::startThreadPool(int nworkers)

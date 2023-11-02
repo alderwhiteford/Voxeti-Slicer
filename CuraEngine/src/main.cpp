@@ -35,9 +35,43 @@ int main(int argc, char** argv)
     // Register the exception handling for arithmetic exceptions, this prevents the "something went wrong" dialog on windows to pop up on a division by zero.
     signal(SIGFPE, cura::signal_FPE);
 #endif
-    std::cerr << std::boolalpha;
+    // Create a buffer to read files from stdin:
+    const int bufferSize = 1024;
+    char buffer[bufferSize];
+    size_t bytesRead = 0;
+    size_t totalBytes = 0;
 
-    cura::Application::getInstance().run(argc, argv);
+    // Set the file type:
+    const char* type;
+    if (argv[2][1] == 'b') {
+        type = "w+b";
+    } else {
+        type = "w+t";
+    }
+
+    const char* settings = "../CuraEngine/machines/definitions/creality_ender3.def.json";
+    
+
+    // Open the file:
+    FILE* file = fopen("voxeti-file.stl", type);
+
+    if (file == nullptr) {
+        perror("fmemopen");
+        return EXIT_FAILURE;
+    }
+
+    // Read data from standard input (stdin) into the FILE object
+    while ((bytesRead = fread(buffer, 1, bufferSize, stdin)) > 0) {
+        totalBytes += bytesRead;
+        fwrite(buffer, 1, bytesRead, file);
+    }
+
+    rewind(file);
+
+    // cura::Application::getInstance().run(argc, argv);
+    std::cerr << std::boolalpha;
+    
+    cura::Application::getInstance().run(settings, file, type);
 
     return 0;
 }

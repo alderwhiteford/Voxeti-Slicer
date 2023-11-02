@@ -90,9 +90,9 @@ list(PREPEND CMAKE_INCLUDE_PATH "/Users/alderwhiteford/.conan/data/arcus/5.3.0/_
 
 
 if (DEFINED ENV{PKG_CONFIG_PATH})
-set(ENV{PKG_CONFIG_PATH} "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators:$ENV{PKG_CONFIG_PATH}")
+set(ENV{PKG_CONFIG_PATH} "/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release/generators:$ENV{PKG_CONFIG_PATH}")
 else()
-set(ENV{PKG_CONFIG_PATH} "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators:")
+set(ENV{PKG_CONFIG_PATH} "/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release/generators:")
 endif()
 
 

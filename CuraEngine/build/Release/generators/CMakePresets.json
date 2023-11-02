@@ -18,8 +18,8 @@
                 "CMAKE_POLICY_DEFAULT_CMP0091": "NEW",
                 "CMAKE_BUILD_TYPE": "Release"
             },
-            "toolchainFile": "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators/conan_toolchain.cmake",
-            "binaryDir": "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release"
+            "toolchainFile": "/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release/generators/conan_toolchain.cmake",
+            "binaryDir": "/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release"
         }
     ],
     "buildPresets": [

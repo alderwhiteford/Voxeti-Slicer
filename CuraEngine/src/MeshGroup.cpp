@@ -131,6 +131,38 @@ void MeshGroup::scaleFromBottom(const Ratio factor_xy, const Ratio factor_z)
     }
 }
 
+bool loadMeshSTL_asciiV2(Mesh* mesh, FILE* f, const FMatrix4x3& matrix)
+{
+    char buffer[1024];
+    FPoint3 vertex;
+    int n = 0;
+    Point3 v0(0, 0, 0), v1(0, 0, 0), v2(0, 0, 0);
+    while (fgets_(buffer, sizeof(buffer), f))
+    {
+        if (sscanf(buffer, " vertex %f %f %f", &vertex.x, &vertex.y, &vertex.z) == 3)
+        {
+            n++;
+            switch (n)
+            {
+            case 1:
+                v0 = matrix.apply(vertex);
+                break;
+            case 2:
+                v1 = matrix.apply(vertex);
+                break;
+            case 3:
+                v2 = matrix.apply(vertex);
+                mesh->addFace(v0, v1, v2);
+                n = 0;
+                break;
+            }
+        }
+    }
+    fclose(f);
+    mesh->finish();
+    return true;
+}
+
 bool loadMeshSTL_ascii(Mesh* mesh, const char* filename, const FMatrix4x3& matrix)
 {
     FILE* f = fopen(filename, "rt");
@@ -158,6 +190,66 @@ bool loadMeshSTL_ascii(Mesh* mesh, const char* filename, const FMatrix4x3& matri
                 break;
             }
         }
+    }
+    fclose(f);
+    mesh->finish();
+    return true;
+}
+
+bool loadMeshSTL_binaryV2(Mesh* mesh, FILE* f, const FMatrix4x3& matrix)
+{
+    fseek(f, 0L, SEEK_END);
+    ("SEEKING FILE END");
+    long long file_size = ftell(f); // The file size is the position of the cursor after seeking to the end.
+    rewind(f); // Seek back to start.
+    ("REWINDING FILE");
+    size_t face_count = (file_size - 80 - sizeof(uint32_t)) / 50; // Subtract the size of the header. Every face uses exactly 50 bytes.
+    ("FACE COUNT: {}", face_count);
+
+    char buffer[80];
+    // Skip the header
+    if (fread(buffer, 80, 1, f) != 1)
+    {
+        ("FAILED READING HEADER");
+        fclose(f);
+        return false;
+    }
+
+    ("SKIPPED HEADER");
+
+    uint32_t reported_face_count;
+    // Read the face count. We'll use it as a sort of redundancy code to check for file corruption.
+    if (fread(&reported_face_count, sizeof(uint32_t), 1, f) != 1)
+    {
+        fclose(f);
+        return false;
+    }
+    if (reported_face_count != face_count)
+    {
+        spdlog::warn("Face count reported by file ({}) is not equal to actual face count ({}). File could be corrupt!", reported_face_count, face_count);
+    }
+
+    ("READ FACE COUNT");
+
+    // For each face read:
+    // float(x,y,z) = normal, float(X,Y,Z)*3 = vertexes, uint16_t = flags
+    //  Every Face is 50 Bytes: Normal(3*float), Vertices(9*float), 2 Bytes Spacer
+    ("BEGINNING READ");
+    mesh->faces.reserve(face_count);
+    mesh->vertices.reserve(face_count);
+    for (unsigned int i = 0; i < face_count; i++)
+    {
+        if (fread(buffer, 50, 1, f) != 1)
+        {
+            fclose(f);
+            return false;
+        }
+        float* v = ((float*)buffer) + 3;
+
+        Point3 v0 = matrix.apply(FPoint3(v[0], v[1], v[2]));
+        Point3 v1 = matrix.apply(FPoint3(v[3], v[4], v[5]));
+        Point3 v2 = matrix.apply(FPoint3(v[6], v[7], v[8]));
+        mesh->addFace(v0, v1, v2);
     }
     fclose(f);
     mesh->finish();
@@ -217,6 +309,17 @@ bool loadMeshSTL_binary(Mesh* mesh, const char* filename, const FMatrix4x3& matr
     return true;
 }
 
+bool loadMeshSTLV2(Mesh* mesh, FILE* f, const FMatrix4x3& matrix, const char* type) {
+    // assign filename to mesh_name
+    mesh->mesh_name = "voxeti_mesh";
+
+    if (strcmp(type, "w+b") == 0) {
+        return loadMeshSTL_binaryV2(mesh, f, matrix);
+    } else {
+        return loadMeshSTL_asciiV2(mesh, f, matrix);
+    }
+}
+
 bool loadMeshSTL(Mesh* mesh, const char* filename, const FMatrix4x3& matrix)
 {
     FILE* f = fopen(filename, "rb");
@@ -274,6 +377,19 @@ bool loadMeshSTL(Mesh* mesh, const char* filename, const FMatrix4x3& matrix)
     return loadMeshSTL_binary(mesh, filename, matrix);
 }
 
+bool loadMeshIntoMeshGroupV2(MeshGroup* meshgroup, FILE* f, const FMatrix4x3& transformation, Settings& object_parent_settings, const char* type)
+{
+    TimeKeeper load_timer;
+
+    Mesh mesh(object_parent_settings);
+    if (loadMeshSTLV2(&mesh, f, transformation, type)) // Load it! If successful...
+    {
+        meshgroup->meshes.push_back(mesh);
+        ("loading STL file, took {:3} seconds", load_timer.restart());
+        return true;
+    }
+}
+
 bool loadMeshIntoMeshGroup(MeshGroup* meshgroup, const char* filename, const FMatrix4x3& transformation, Settings& object_parent_settings)
 {
     TimeKeeper load_timer;
@@ -285,7 +401,7 @@ bool loadMeshIntoMeshGroup(MeshGroup* meshgroup, const char* filename, const FMa
         if (loadMeshSTL(&mesh, filename, transformation)) // Load it! If successful...
         {
             meshgroup->meshes.push_back(mesh);
-            spdlog::info("loading '{}' took {:3} seconds", filename, load_timer.restart());
+            ("loading '{}' took {:3} seconds", filename, load_timer.restart());
             return true;
         }
     }

@@ -1,4 +1,4 @@
-# Install script for directory: /Users/alderwhiteford/Code Projects/CuraEngine/tests
+# Install script for directory: /Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/tests
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

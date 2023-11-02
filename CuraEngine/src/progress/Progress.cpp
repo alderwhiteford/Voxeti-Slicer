@@ -69,7 +69,7 @@ void Progress::messageProgressStage(Progress::Stage stage, TimeKeeper* time_keep
     {
         if ((int)stage > 0)
         {
-            spdlog::info("Progress: {} accomplished in {:3}s", names[(int)stage - 1], time_keeper->restart());
+            ("Progress: {} accomplished in {:3}s", names[(int)stage - 1], time_keeper->restart());
         }
         else
         {
@@ -78,7 +78,7 @@ void Progress::messageProgressStage(Progress::Stage stage, TimeKeeper* time_keep
         
         if ((int)stage < (int)Stage::FINISH)
         {
-            spdlog::info("Starting {}...", names[(int)stage]);
+            ("Starting {}...", names[(int)stage]);
         }
     }
 }

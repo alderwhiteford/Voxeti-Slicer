@@ -30,6 +30,11 @@ public:
     CommandLine(const std::vector<std::string>& arguments);
 
     /*
+     * Construct a new command line instance that intakes settings and a file:
+     */
+    CommandLine(const char* settings, FILE* file, const char* type);
+
+    /*
      * \brief Indicate that we're beginning to send g-code.
      * This does nothing to the command line.
      */
@@ -150,11 +155,25 @@ public:
      */
     void sliceNext() override;
 
+    void sliceNextV2();
+
 private:
     /*
      * \brief The command line arguments that the application was called with.
      */
     std::vector<std::string> arguments;
+
+    /*
+     * \breif: The printer settings to be used to slice an STL file:
+     */
+    const char* settings;
+
+    /*
+     * \brief: The file that will be sliced:
+     */
+    FILE* file;
+
+    const char* type;
 
     /*
      * The last progress update that we output to stdcerr.

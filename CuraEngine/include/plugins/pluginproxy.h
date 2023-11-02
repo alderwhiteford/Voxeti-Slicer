@@ -116,10 +116,10 @@ public:
                 valid_ = validator_type{ slot_info_, plugin_info };
                 if (valid_)
                 {
-                    spdlog::info("Using plugin: '{}-{}' running at [{}] for slot {}", plugin_info.plugin_name, plugin_info.plugin_version, plugin_info.peer, slot_info_.slot_id);
+                    ("Using plugin: '{}-{}' running at [{}] for slot {}", plugin_info.plugin_name, plugin_info.plugin_version, plugin_info.peer, slot_info_.slot_id);
                     if (! plugin_info.broadcast_subscriptions.empty())
                     {
-                        spdlog::info("Subscribing plugin '{}' to the following broadcasts {}", plugin_info.plugin_name, plugin_info.broadcast_subscriptions);
+                        ("Subscribing plugin '{}' to the following broadcasts {}", plugin_info.plugin_name, plugin_info.broadcast_subscriptions);
                     }
                 }
             },

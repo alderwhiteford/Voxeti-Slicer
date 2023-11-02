@@ -30,6 +30,14 @@ CommandLine::CommandLine(const std::vector<std::string>& arguments)
 {
 }
 
+CommandLine::CommandLine(const char* settings, FILE* file, const char* type)
+    : settings(settings)
+    , file(file)
+    , type(type)
+    , last_shown_progress(0)
+{ 
+}
+
 // These are not applicable to command line slicing.
 void CommandLine::beginGCode()
 {
@@ -89,7 +97,7 @@ void CommandLine::sendPrintTimeMaterialEstimates() const
 {
     std::vector<Duration> time_estimates = FffProcessor::getInstance()->getTotalPrintTimePerFeature();
     double sum = std::accumulate(time_estimates.begin(), time_estimates.end(), 0.0);
-    spdlog::info("Total print time: {:3}", sum);
+    ("Total print time: {:3}", sum);
 
     sum = 0.0;
     for (size_t extruder_nr = 0; extruder_nr < Application::getInstance().current_slice->scene.extruders.size(); extruder_nr++)
@@ -108,21 +116,14 @@ void CommandLine::sendProgress(const float& progress) const
     // TODO: Do we want to print a progress bar? We'd need a better solution to not have that progress bar be ruined by any logging.
 }
 
-void CommandLine::sliceNext()
-{
+void CommandLine::sliceNext() {
     FffProcessor::getInstance()->time_keeper.restart();
 
-    // Count the number of mesh groups to slice for.
+    // Instantiate a slice:
     size_t num_mesh_groups = 1;
-    for (size_t argument_index = 2; argument_index < arguments.size(); argument_index++)
-    {
-        if (arguments[argument_index].find("--next") == 0) // Starts with "--next".
-        {
-            num_mesh_groups++;
-        }
-    }
     Slice slice(num_mesh_groups);
 
+    // Retrieve the application instance:
     Application::getInstance().current_slice = &slice;
 
     size_t mesh_group_index = 0;
@@ -135,228 +136,49 @@ void CommandLine::sliceNext()
     bool force_read_parent = true;
     bool force_read_nondefault = false;
 
-    for (size_t argument_index = 2; argument_index < arguments.size(); argument_index++)
+    // --------- LOAD SETTINGS FILES ---------
+    if (loadJSON(settings, *last_settings, force_read_parent, force_read_nondefault))
     {
-        std::string argument = arguments[argument_index];
-        if (argument[0] == '-') // Starts with "-".
-        {
-            if (argument[1] == '-') // Starts with "--".
-            {
-                if (argument.find("--next") == 0) // Starts with "--next".
-                {
-                    try
-                    {
-                        spdlog::info("Loaded from disk in {}", FffProcessor::getInstance()->time_keeper.restart());
-
-                        mesh_group_index++;
-                        FffProcessor::getInstance()->time_keeper.restart();
-                        last_settings = &slice.scene.mesh_groups[mesh_group_index].settings;
-                    }
-                    catch (...)
-                    {
-                        // Catch all exceptions.
-                        // This prevents the "something went wrong" dialogue on Windows to pop up on a thrown exception.
-                        // Only ClipperLib currently throws exceptions. And only in the case that it makes an internal error.
-                        spdlog::error("Unknown exception!");
-                        exit(1);
-                    }
-                }
-                else if (argument.find("--force-read-parent") == 0 || argument.find("--force_read_parent") == 0)
-                {
-                    spdlog::info("From this point on, force the parser to read values of non-leaf settings, instead of skipping over them as is proper.");
-                    force_read_parent = true;
-                }
-                else if (argument.find("--force-read-nondefault") == 0 || argument.find("--force_read_nondefault") == 0)
-                {
-                    spdlog::info(
-                        "From this point on, if 'default_value' is not available, force the parser to read 'value' (instead of dropping it) to fill the used setting-values.");
-                    force_read_nondefault = true;
-                }
-                else if (argument.find("--end-force-read") == 0 || argument.find("--end_force_read") == 0)
-                {
-                    spdlog::info("From this point on, reset all force-XXX values to false (don't 'force read ___' anymore).");
-                    force_read_parent = false;
-                    force_read_nondefault = false;
-                }
-                else
-                {
-                    spdlog::error("Unknown option: {}", argument);
-                }
-            }
-            else // Starts with "-" but not with "--".
-            {
-                argument = arguments[argument_index];
-                switch (argument[1])
-                {
-                case 'v':
-                {
-                    spdlog::set_level(spdlog::level::debug);
-                    break;
-                }
-                case 'm':
-                {
-                    int threads = stoi(argument.substr(2));
-                    Application::getInstance().startThreadPool(threads);
-                    break;
-                }
-                case 'p':
-                {
-                    // enableProgressLogging(); FIXME: how to handle progress logging? Is this still relevant?
-                    break;
-                }
-                case 'j':
-                {
-                    argument_index++;
-                    if (argument_index >= arguments.size())
-                    {
-                        spdlog::error("Missing JSON file with -j argument.");
-                        exit(1);
-                    }
-                    argument = arguments[argument_index];
-                    if (loadJSON(argument, *last_settings, force_read_parent, force_read_nondefault))
-                    {
-                        spdlog::error("Failed to load JSON file: {}", argument);
-                        exit(1);
-                    }
-
-                    // If this was the global stack, create extruders for the machine_extruder_count setting.
-                    if (last_settings == &slice.scene.settings)
-                    {
-                        const size_t extruder_count = slice.scene.settings.get<size_t>("machine_extruder_count");
-                        while (slice.scene.extruders.size() < extruder_count)
-                        {
-                            slice.scene.extruders.emplace_back(slice.scene.extruders.size(), &slice.scene.settings);
-                        }
-                    }
-                    // If this was an extruder stack, make sure that the extruder_nr setting is correct.
-                    if (last_settings == &last_extruder->settings)
-                    {
-                        last_extruder->settings.add("extruder_nr", std::to_string(last_extruder->extruder_nr));
-                    }
-                    break;
-                }
-                case 'e':
-                {
-                    size_t extruder_nr = stoul(argument.substr(2));
-                    while (slice.scene.extruders.size() <= extruder_nr) // Make sure we have enough extruders up to the extruder_nr that the user wanted.
-                    {
-                        slice.scene.extruders.emplace_back(extruder_nr, &slice.scene.settings);
-                    }
-                    last_settings = &slice.scene.extruders[extruder_nr].settings;
-                    last_settings->add("extruder_nr", argument.substr(2));
-                    last_extruder = &slice.scene.extruders[extruder_nr];
-                    break;
-                }
-                case 'l':
-                {
-                    argument_index++;
-                    if (argument_index >= arguments.size())
-                    {
-                        spdlog::error("Missing model file with -l argument.");
-                        exit(1);
-                    }
-                    argument = arguments[argument_index];
-
-                    const FMatrix4x3 transformation = last_settings->get<FMatrix4x3>("mesh_rotation_matrix"); // The transformation applied to the model when loaded.
-
-                    if (! loadMeshIntoMeshGroup(&slice.scene.mesh_groups[mesh_group_index], argument.c_str(), transformation, last_extruder->settings))
-                    {
-                        spdlog::error("Failed to load model: {}. (error number {})", argument, errno);
-                        exit(1);
-                    }
-                    else
-                    {
-                        last_settings = &slice.scene.mesh_groups[mesh_group_index].meshes.back().settings;
-                    }
-                    break;
-                }
-                case 'o':
-                {
-                    argument_index++;
-                    if (argument_index >= arguments.size())
-                    {
-                        spdlog::error("Missing output file with -o argument.");
-                        exit(1);
-                    }
-                    argument = arguments[argument_index];
-                    if (! FffProcessor::getInstance()->setTargetFile(argument.c_str()))
-                    {
-                        spdlog::error("Failed to open {} for output.", argument.c_str());
-                        exit(1);
-                    }
-                    break;
-                }
-                case 'g':
-                {
-                    last_settings = &slice.scene.mesh_groups[mesh_group_index].settings;
-                    break;
-                }
-                /* ... falls through ... */
-                case 's':
-                {
-                    // Parse the given setting and store it.
-                    argument_index++;
-                    if (argument_index >= arguments.size())
-                    {
-                        spdlog::error("Missing setting name and value with -s argument.");
-                        exit(1);
-                    }
-                    argument = arguments[argument_index];
-                    const size_t value_position = argument.find("=");
-                    std::string key = argument.substr(0, value_position);
-                    if (value_position == std::string::npos)
-                    {
-                        spdlog::error("Missing value in setting argument: -s {}", argument);
-                        exit(1);
-                    }
-                    std::string value = argument.substr(value_position + 1);
-                    last_settings->add(key, value);
-                    break;
-                }
-                default:
-                {
-                    spdlog::error("Unknown option: -{}", argument[1]);
-                    Application::getInstance().printCall();
-                    Application::getInstance().printHelp();
-                    exit(1);
-                    break;
-                }
-                }
-            }
-        }
-        else
-        {
-            spdlog::error("Unknown option: {}", argument);
-            Application::getInstance().printCall();
-            Application::getInstance().printHelp();
-            exit(1);
-        }
-    }
-
-    arguments.clear(); // We've processed all arguments now.
-
-#ifndef DEBUG
-    try
-    {
-#endif // DEBUG
-        slice.scene.mesh_groups[mesh_group_index].finalize();
-        spdlog::info("Loaded from disk in {:3}s\n", FffProcessor::getInstance()->time_keeper.restart());
-
-        // Start slicing.
-        slice.compute();
-#ifndef DEBUG
-    }
-    catch (...)
-    {
-        // Catch all exceptions.
-        // This prevents the "something went wrong" dialogue on Windows to pop up on a thrown exception.
-        // Only ClipperLib currently throws exceptions. And only in the case that it makes an internal error.
-        spdlog::error("Unknown exception.");
+        spdlog::error("Failed to load JSON file!");
         exit(1);
     }
-#endif // DEBUG
 
-    // Finalize the processor. This adds the end g-code and reports statistics.
+    // If this was the global stack, create extruders for the machine_extruder_count setting.
+    if (last_settings == &slice.scene.settings)
+    {
+        const size_t extruder_count = slice.scene.settings.get<size_t>("machine_extruder_count");
+        while (slice.scene.extruders.size() < extruder_count)
+        {
+            slice.scene.extruders.emplace_back(slice.scene.extruders.size(), &slice.scene.settings);
+        }
+    }
+    // If this was an extruder stack, make sure that the extruder_nr setting is correct.
+    if (last_settings == &last_extruder->settings)
+    {
+        last_extruder->settings.add("extruder_nr", std::to_string(last_extruder->extruder_nr));
+    }
+
+    // --------- LOAD STL FILE ---------
+    const FMatrix4x3 transformation = last_settings->get<FMatrix4x3>("mesh_rotation_matrix"); // The transformation applied to the model when loaded.
+
+    if (! loadMeshIntoMeshGroupV2(&slice.scene.mesh_groups[mesh_group_index], file, transformation, last_extruder->settings, type))
+    {
+        spdlog::error("Failed to load STL file! (error number {})", errno);
+        exit(1);
+    }
+    else
+    {
+        last_settings = &slice.scene.mesh_groups[mesh_group_index].meshes.back().settings;
+    }
+
+    // --------- SLICE FILE ---------
+    slice.scene.mesh_groups[mesh_group_index].finalize();
+    ("Loaded from disk in {:3}s\n", FffProcessor::getInstance()->time_keeper.restart());
+
+    // Start slicing.
+    slice.compute();
+
+    // --------- END SLICING ---------
     FffProcessor::getInstance()->finalize();
 }
 
@@ -550,9 +372,7 @@ void CommandLine::loadJSONSettings(const rapidjson::Value& element, Settings& se
         if (! (setting_object.HasMember("default_value") || (force_read_nondefault && setting_object.HasMember("value") && ! settings.has(name))))
         {
             if (! setting_object.HasMember("children"))
-            {
-                // Setting has no child-settings, so must be leaf, but also holds no (default) value?!
-                spdlog::warn("JSON setting {} has no [default_]value!", name);
+            {                
             }
             continue;
         }

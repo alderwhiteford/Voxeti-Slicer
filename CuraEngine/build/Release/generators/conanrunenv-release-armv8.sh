@@ -1,13 +1,13 @@
-echo "echo Restoring environment" > "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators/deactivate_conanrunenv-release-armv8.sh"
+echo "echo Restoring environment" > "/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release/generators/deactivate_conanrunenv-release-armv8.sh"
 for v in LD_LIBRARY_PATH DYLD_LIBRARY_PATH GRPC_DEFAULT_SSL_ROOTS_FILE_PATH PATH
 do
     is_defined="true"
     value=$(printenv $v) || is_defined="" || true
     if [ -n "$value" ] || [ -n "$is_defined" ]
     then
-        echo export "$v='$value'" >> "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators/deactivate_conanrunenv-release-armv8.sh"
+        echo export "$v='$value'" >> "/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release/generators/deactivate_conanrunenv-release-armv8.sh"
     else
-        echo unset $v >> "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators/deactivate_conanrunenv-release-armv8.sh"
+        echo unset $v >> "/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release/generators/deactivate_conanrunenv-release-armv8.sh"
     fi
 done
 

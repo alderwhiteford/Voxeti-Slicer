@@ -3759,7 +3759,8 @@ void FffGcodeWriter::finalize()
     }
     else
     {
-        spdlog::info("Gcode header after slicing: {}", prefix);
+         // Write header to output:
+         std::cout << prefix << std::endl;
     }
     if (mesh_group_settings.get<bool>("acceleration_enabled"))
     {

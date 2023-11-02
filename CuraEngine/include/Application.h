@@ -68,17 +68,14 @@ public:
     void printHelp() const;
 
     /*!
-     * \brief Starts the application.
-     *
-     * It will start by parsing the command line arguments to see what it must
-     * be doing.
-     *
-     * This function can only be called once, because it has side-effects on
-     * static fields across the application.
-     * \param argc The number of arguments provided to the application.
-     * \param argv The arguments provided to the application.
+     * \brief Starts the application
+     * 
+     * It accepts the location of a settings file and a file stream to some STL file
+     * to be sliced.
+     * \param settings The printer settings that will be used to parse the STL file
+     * \param file An STL file to be sliced
      */
-    void run(const size_t argc, char** argv);
+    void run(const char* settings, FILE* file, const char* type);
 
     /*!
      * \brief Start the global thread pool.

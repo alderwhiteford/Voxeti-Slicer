@@ -1,1 +1,1 @@
-. "/Users/alderwhiteford/Code Projects/CuraEngine/build/Release/generators/conanbuildenv-release-armv8.sh"
+. "/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release/generators/conanbuildenv-release-armv8.sh"
