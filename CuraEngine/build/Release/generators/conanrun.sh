@@ -1,0 +1,1 @@
+. "/home/natesawant/Voxeti-Slicer/CuraEngine/build/Release/generators/conanrunenv-release-x86_64.sh"

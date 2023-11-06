@@ -1,34 +1,34 @@
 [settings]
-    arch=armv8
+    arch=x86_64
     build_type=Release
-    compiler=apple-clang
+    compiler=gcc
     compiler.cppstd=20
-    compiler.libcxx=libc++
-    compiler.version=14
-    os=Macos
+    compiler.libcxx=libstdc++
+    compiler.version=11
+    os=Linux
 
 [requires]
-    abseil/20220623.0:63312d5711219c8db2043ea7a697bcde8b3d4e92
-    arcus/5.3.0:1661683f567caf4f75105ad7e6c3e38089cad2f4
+    abseil/20220623.0:f41ad36a364e6c52f47e01592841a4f29e55a9eb
+    arcus/5.3.0:70bf4e95c22ecef69cbd08e29ee6823982617e66
     asio-grpc/2.6.0:bb6442aba7a6e403c16a912f65317abff8542491
     boost/1.82.0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    c-ares/1.19.0:9064e69ec9435980c5beff445cf01756b9852e7d
-    clipper/6.4.2:735ba49d802a2fe573d275d029d112fb220a37f5
-    curaengine_grpc_definitions/0.2.0-alpha+testing_7e6d14@ultimaker/testing:4d644e0fa22864e98f65a8017f5f81c286f655b8
-    fmt/9.0.0:2ac80ce7226bd1f5543449677eabdf97042a492d
-    googleapis/cci.20221108:b3f9590705df56b74b206ad64cd7c617ff79b63d
-    grpc/1.50.1:a8a61ca8f721607b9c581b3ee390ea9d1dbafa12
-    grpc-proto/cci.20220627:99fe85f7410a6280253394281eb30fd88a924f91
+    c-ares/1.19.0:568a9f05046bc2a125b25bb11b7b1b0ed567b825
+    clipper/6.4.2:8207dddeaa0eb47d6c605b11745caca15122b044
+    curaengine_grpc_definitions/0.2.0-alpha+testing_7e6d14@ultimaker/testing:667a4ffa85fbda8017fe1715e37f2d1b77da49dc
+    fmt/9.0.0:68fc4976d3e6ccc402bc0c4977ab81a209be0e32
+    googleapis/cci.20221108:f1d1cc9df74a589262f7ce8541368380114bd15a
+    grpc/1.50.1:e3bea22aa8fdc1ff5b3f9bb562dbc0c9144463b1
+    grpc-proto/cci.20220627:d99054a61e1e8873f76a684aed807e369c6ff22b
     neargye-semver/0.3.0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    openssl/1.1.1l:240c2182163325b213ca6886a7614c8ed2bf1738
-    protobuf/3.21.9:fcefee49019fc94b52f2f9aaf0e81c1fe3a1ebb1
+    openssl/1.1.1l:dfbe50feef7f3c6223a476cd5aeadb687084a646
+    protobuf/3.21.9:2d7fe4029ef2935cad9c11b65b2ef324eef3f738
     range-v3/0.12.0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
     rapidjson/1.1.0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    re2/20230301:63312d5711219c8db2043ea7a697bcde8b3d4e92
+    re2/20230301:f41ad36a364e6c52f47e01592841a4f29e55a9eb
     scripta/0.1.0@ultimaker/testing:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    spdlog/1.10.0:13ddee9a0d9f23358fa518ac489e4ef34af417f5
+    spdlog/1.10.0:93619ca2e7a87e7c61ecba2796c9481a749417cc
     stb/20200203:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    zlib/1.2.12:240c2182163325b213ca6886a7614c8ed2bf1738
+    zlib/1.2.12:dfbe50feef7f3c6223a476cd5aeadb687084a646
 
 [options]
     enable_arcus=True
@@ -38,36 +38,36 @@
     enable_remote_plugins=False
 
 [full_settings]
-    arch=armv8
+    arch=x86_64
     build_type=Release
-    compiler=apple-clang
+    compiler=gcc
     compiler.cppstd=20
-    compiler.libcxx=libc++
-    compiler.version=14
-    os=Macos
+    compiler.libcxx=libstdc++
+    compiler.version=11
+    os=Linux
 
 [full_requires]
-    abseil/20220623.0:63312d5711219c8db2043ea7a697bcde8b3d4e92
-    arcus/5.3.0:1661683f567caf4f75105ad7e6c3e38089cad2f4
+    abseil/20220623.0:f41ad36a364e6c52f47e01592841a4f29e55a9eb
+    arcus/5.3.0:70bf4e95c22ecef69cbd08e29ee6823982617e66
     asio-grpc/2.6.0:bb6442aba7a6e403c16a912f65317abff8542491
     boost/1.82.0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    c-ares/1.19.0:9064e69ec9435980c5beff445cf01756b9852e7d
-    clipper/6.4.2:735ba49d802a2fe573d275d029d112fb220a37f5
-    curaengine_grpc_definitions/0.2.0-alpha+testing_7e6d14@ultimaker/testing:4d644e0fa22864e98f65a8017f5f81c286f655b8
-    fmt/9.0.0:2ac80ce7226bd1f5543449677eabdf97042a492d
-    googleapis/cci.20221108:b3f9590705df56b74b206ad64cd7c617ff79b63d
-    grpc/1.50.1:a8a61ca8f721607b9c581b3ee390ea9d1dbafa12
-    grpc-proto/cci.20220627:99fe85f7410a6280253394281eb30fd88a924f91
+    c-ares/1.19.0:568a9f05046bc2a125b25bb11b7b1b0ed567b825
+    clipper/6.4.2:8207dddeaa0eb47d6c605b11745caca15122b044
+    curaengine_grpc_definitions/0.2.0-alpha+testing_7e6d14@ultimaker/testing:667a4ffa85fbda8017fe1715e37f2d1b77da49dc
+    fmt/9.0.0:68fc4976d3e6ccc402bc0c4977ab81a209be0e32
+    googleapis/cci.20221108:f1d1cc9df74a589262f7ce8541368380114bd15a
+    grpc/1.50.1:e3bea22aa8fdc1ff5b3f9bb562dbc0c9144463b1
+    grpc-proto/cci.20220627:d99054a61e1e8873f76a684aed807e369c6ff22b
     neargye-semver/0.3.0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    openssl/1.1.1l:240c2182163325b213ca6886a7614c8ed2bf1738
-    protobuf/3.21.9:fcefee49019fc94b52f2f9aaf0e81c1fe3a1ebb1
+    openssl/1.1.1l:dfbe50feef7f3c6223a476cd5aeadb687084a646
+    protobuf/3.21.9:2d7fe4029ef2935cad9c11b65b2ef324eef3f738
     range-v3/0.12.0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
     rapidjson/1.1.0:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    re2/20230301:63312d5711219c8db2043ea7a697bcde8b3d4e92
+    re2/20230301:f41ad36a364e6c52f47e01592841a4f29e55a9eb
     scripta/0.1.0@ultimaker/testing:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    spdlog/1.10.0:13ddee9a0d9f23358fa518ac489e4ef34af417f5
+    spdlog/1.10.0:93619ca2e7a87e7c61ecba2796c9481a749417cc
     stb/20200203:5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9
-    zlib/1.2.12:240c2182163325b213ca6886a7614c8ed2bf1738
+    zlib/1.2.12:dfbe50feef7f3c6223a476cd5aeadb687084a646
 
 [full_options]
     enable_arcus=True
@@ -92,7 +92,7 @@
     boost:filesystem_version=None
     boost:header_only=True
     boost:i18n_backend=deprecated
-    boost:i18n_backend_iconv=libiconv
+    boost:i18n_backend_iconv=libc
     boost:i18n_backend_icu=False
     boost:layout=system
     boost:lzma=False

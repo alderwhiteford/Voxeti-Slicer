@@ -1,0 +1,1 @@
+. "/home/natesawant/Voxeti-Slicer/CuraEngine/build/Release/generators/deactivate_conanbuildenv-release-x86_64.sh"

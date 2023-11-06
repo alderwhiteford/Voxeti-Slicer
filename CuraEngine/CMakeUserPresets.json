@@ -4,6 +4,6 @@
         "conan": {}
     },
     "include": [
-        "/Users/alderwhiteford/Code Projects/Voxeti Slicer/CuraEngine/build/Release/generators/CMakePresets.json"
+        "/home/natesawant/Voxeti-Slicer/CuraEngine/build/Release/generators/CMakePresets.json"
     ]
 }

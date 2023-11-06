@@ -90,7 +90,7 @@
   ],
   [
    "boost:i18n_backend_iconv",
-   "libiconv"
+   "libc"
   ],
   [
    "boost:i18n_backend_icu",
