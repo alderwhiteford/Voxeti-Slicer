@@ -35,40 +35,45 @@ int main(int argc, char** argv)
     // Register the exception handling for arithmetic exceptions, this prevents the "something went wrong" dialog on windows to pop up on a division by zero.
     signal(SIGFPE, cura::signal_FPE);
 #endif
-    // Create a buffer to read files from stdin:
-    const int bufferSize = 1024;
-    char buffer[bufferSize];
+    // Set the file type:
+    const char* type;
+    if (argc >= 3 && argv[2][1] == 'b') {
+        type = "w+b";
+    } else if (argc >= 3 && argv[2][1] == 't') {
+        type = "w+t";
+    } else {
+        spdlog::error("Invalid file type!");
+        exit(1);
+    }
+    
+    // Retrieve the file size:
+    const int fileSize = (argc >= 4) ? std::stoi(argv[3]) : -1;
+
+    if (fileSize == -1) {
+        spdlog::error("Invalid file size or no file size provided!");
+        exit(1);
+    }
+
+    char* buffer = (fileSize < 10000000) ? new char[fileSize] : (char*)malloc(fileSize);
     size_t bytesRead = 0;
     size_t totalBytes = 0;
 
-    // Set the file type:
-    const char* type;
-    if (argv[2][1] == 'b') {
-        type = "w+b";
-    } else {
-        type = "w+t";
-    }
-
     const char* settings = "../CuraEngine/machines/definitions/creality_ender3.def.json";
-    
 
-    // Open the file:
-    FILE* file = fopen("voxeti-file.stl", type);
+    // Open the file V2:
+    FILE* file = fmemopen(buffer, fileSize, "w+");
 
     if (file == nullptr) {
         perror("fmemopen");
         return EXIT_FAILURE;
     }
 
-    // Read data from standard input (stdin) into the FILE object
-    while ((bytesRead = fread(buffer, 1, bufferSize, stdin)) > 0) {
-        totalBytes += bytesRead;
+    while ((bytesRead = fread(buffer, 1, fileSize, stdin)) > 0) {
         fwrite(buffer, 1, bytesRead, file);
     }
 
     rewind(file);
 
-    // cura::Application::getInstance().run(argc, argv);
     std::cerr << std::boolalpha;
     
     cura::Application::getInstance().run(settings, file, type);

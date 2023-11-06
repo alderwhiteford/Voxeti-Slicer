@@ -82,4 +82,4 @@ applications and integrate it into your own app.
 [Button Internals]: https://img.shields.io/badge/Internals-00979D?style=for-the-badge&logoColor=white&logo=CodeReview
 [Button Install]: https://img.shields.io/badge/Installation-e23345?style=for-the-badge&logoColor=white&logo=DocuSign
 
-export CURA_ENGINE_SEARCH_PATH="../../machines/definitions:../../machines/extruders"
+export CURA_ENGINE_SEARCH_PATH="../CuraEngine/machines/definitions:../CuraEngine/machines/extruders"
