@@ -13,12 +13,6 @@ func RegisterBackendHandlers(e *echo.Group, logger echo.Logger) {
 
 	// Submit an STL file for slicing:
 	api.POST("/", func(c echo.Context) error {
-		// Read the body of the request:
-		binary := c.FormValue("binary")
-		if binary == "" {
-			return c.JSON(utilities.CreateErrorResponse(400, "Please provide binary form field to specify file type!"))
-		}
-
 		// Extract the file from the request:
 		file, err := c.FormFile("file")
 		if err != nil {
@@ -26,12 +20,12 @@ func RegisterBackendHandlers(e *echo.Group, logger echo.Logger) {
 		}
 
 		// Basic STL validation:
-		errResponse := model.ValidateSTLFile(file)
+		fileType, errResponse := model.ValidateSTLFile(file)
 		if errResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message));
 		}
 
-		output, errResponse := model.SliceSTLFile(binary, file)
+		output, errResponse := model.SliceSTLFile(*fileType, file, logger)
 		if errResponse != nil {
 			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message));
 		}

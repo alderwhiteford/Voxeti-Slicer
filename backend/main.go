@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
-	"os"
 	"context"
+	"fmt"
 	"main/controller"
 	"net/http"
+	"os"
 	"os/signal"
 	"time"
 
@@ -49,3 +49,37 @@ func main() {
 		e.Logger.Fatal(err)
 	}
 }
+
+// func mainTesting() {
+	// file, err := os.Open("./assets/test.stl")
+	// if err != nil {
+	// 	panic(err)
+	// }
+  // defer file.Close()
+
+	// fileInfo, err := file.Stat()
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fileSize := fmt.Sprint(fileInfo.Size())
+
+
+	// // Create a command for the C++ project.
+	// cmd := exec.Command(
+	// 	"../CuraEngine/build/Release/CuraEngine",
+	// 	"slice",
+	// 	"-b",
+	// 	fileSize,
+	// )
+
+	// cmd.Stdin = file
+
+	// output, err := cmd.CombinedOutput()
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// // Print the output (including any error messages)
+	// fmt.Println("C++ module output:")
+	// fmt.Println(string(output))
+// }

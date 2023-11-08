@@ -1,5 +1,7 @@
 package utilities
 
+var FILE_MAX_SIZE int64 = 1000000 * 50 // (bytes * # of megabytes)
+
 type ErrorResponse struct {
 	Code int
 	Message string
