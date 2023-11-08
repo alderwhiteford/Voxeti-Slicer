@@ -30,7 +30,7 @@ func RegisterBackendHandlers(e *echo.Group, logger echo.Logger) {
 			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message));
 		}
 
-		jsonOutput, errResponse := model.ParseSliceOutput(*output)
+		jsonOutput, errResponse := model.ParseSliceOutput(*output, file.Filename)
 		if (errResponse != nil) {
 			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message));
 		}

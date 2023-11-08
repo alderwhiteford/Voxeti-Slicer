@@ -213,7 +213,7 @@ func ValidateASCIISTLFile(file multipart.File, size int64) *utilities.ErrorRespo
 	}
 }
 
-func ParseSliceOutput(output string) (*utilities.SliceData, *utilities.ErrorResponse) {
+func ParseSliceOutput(output string, fileName string) (*utilities.SliceData, *utilities.ErrorResponse) {
 	errResponse := &utilities.ErrorResponse{}
 
 	var rex = regexp.MustCompile(";([^:]+):([^;]+)")
@@ -221,6 +221,10 @@ func ParseSliceOutput(output string) (*utilities.SliceData, *utilities.ErrorResp
 	data := rex.FindAllStringSubmatch(output, -1)
 
 	res := make(map[string]interface{})
+
+	// Add the file name:
+	res["file"] = fileName
+	
 	// For each key value pair:
 	for _, kv := range data {
 		k := strings.ToLower(regexp.MustCompile(`[^a-zA-Z]+`).ReplaceAllString(kv[1], ""))

@@ -8,6 +8,7 @@ type ErrorResponse struct {
 }
 
 type SliceData struct {
+	File					    string  `json:"file"`
 	Flavor            string  `json:"flavor"`
 	TimeS             int     `json:"time"`
 	FilamentUsed      float32 `json:"filamentused"`
