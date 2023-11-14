@@ -17,14 +17,13 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-
-func SliceSTLFile(binary int, file *multipart.FileHeader, logger echo.Logger) (*string, *utilities.ErrorResponse) {
+func SliceSTLFile(binary int, file *multipart.FileHeader, layerHeightString string, logger echo.Logger) (*string, *utilities.ErrorResponse) {
 	errResponse := &utilities.ErrorResponse{}
 
 	// Retrieve the file size:
 	fileSize := file.Size
 	fileSizeString := fmt.Sprintf("%d", fileSize)
-	
+
 	// Open the STL file:
 	stlFile, err := file.Open()
 	if err != nil {
@@ -35,7 +34,7 @@ func SliceSTLFile(binary int, file *multipart.FileHeader, logger echo.Logger) (*
 	defer stlFile.Close()
 
 	// Identify file type:
-	var fileType string;
+	var fileType string
 	if binary == 0 {
 		fileType = "-t"
 	} else if binary == 1 {
@@ -52,7 +51,10 @@ func SliceSTLFile(binary int, file *multipart.FileHeader, logger echo.Logger) (*
 		"slice",
 		fileType,
 		fileSizeString,
+		layerHeightString,
 	)
+
+	fmt.Println(cmd)
 
 	cmd.Stdin = stlFile
 
@@ -70,7 +72,7 @@ func SliceSTLFile(binary int, file *multipart.FileHeader, logger echo.Logger) (*
 
 func ValidateSTLFile(file *multipart.FileHeader) (*int, *utilities.ErrorResponse) {
 	errResponse := &utilities.ErrorResponse{}
-	
+
 	// Enforce Size Limitations:
 	if file.Size > utilities.FILE_MAX_SIZE {
 		errResponse.Code = 400
@@ -104,7 +106,7 @@ func ValidateSTLFile(file *multipart.FileHeader) (*int, *utilities.ErrorResponse
 		return nil, errResponse
 	}
 
-	var fileType int;
+	var fileType int
 	// Determine which method to call:
 	if string(firstBytes) == "solid" {
 		// Validate an ASCII file:
@@ -224,7 +226,7 @@ func ParseSliceOutput(output string, fileName string) (*utilities.SliceData, *ut
 
 	// Add the file name:
 	res["file"] = fileName
-	
+
 	// For each key value pair:
 	for _, kv := range data {
 		k := strings.ToLower(regexp.MustCompile(`[^a-zA-Z]+`).ReplaceAllString(kv[1], ""))
@@ -235,7 +237,7 @@ func ParseSliceOutput(output string, fileName string) (*utilities.SliceData, *ut
 			i, err := strconv.ParseFloat(v, 32)
 			if err != nil {
 				errResponse.Code = 400
-				errResponse.Message = "Failed to slice STL!"
+				errResponse.Message = "Failed to slice STL! " + string(output)
 				return nil, errResponse
 			}
 			res[k] = i

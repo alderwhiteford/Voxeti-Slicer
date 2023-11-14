@@ -8,23 +8,23 @@
 #endif
 
 #include <spdlog/spdlog.h>
-
+#include "settings/Settings.h"
 #include "Application.h"
 
 namespace cura
 {
 
-// Signal handler for a "floating point exception", which can also be integer division by zero errors.
-void signal_FPE(int n)
-{
-    (void)n;
-    spdlog::error("Arithmetic exception.");
-    exit(1);
-}
+    // Signal handler for a "floating point exception", which can also be integer division by zero errors.
+    void signal_FPE(int n)
+    {
+        (void)n;
+        spdlog::error("Arithmetic exception.");
+        exit(1);
+    }
 
 } // namespace cura
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 #if defined(__linux__) || (defined(__APPLE__) && defined(__MACH__))
     // Lower the process priority on linux and mac. On windows this is done on process creation from the GUI.
@@ -36,46 +36,60 @@ int main(int argc, char** argv)
     signal(SIGFPE, cura::signal_FPE);
 #endif
     // Set the file type:
-    const char* type;
-    if (argc >= 3 && argv[2][1] == 'b') {
+    const char *type;
+    if (argc >= 3 && argv[2][1] == 'b')
+    {
         type = "w+b";
-    } else if (argc >= 3 && argv[2][1] == 't') {
+    }
+    else if (argc >= 3 && argv[2][1] == 't')
+    {
         type = "w+t";
-    } else {
+    }
+    else
+    {
         spdlog::error("Invalid file type!");
         exit(1);
     }
-    
+
     // Retrieve the file size:
     const int fileSize = (argc >= 4) ? std::stoi(argv[3]) : -1;
+    const float layerHeight = (argc >= 5) ? std::stof(argv[4]) : 0.2;
 
-    if (fileSize == -1) {
+    spdlog::info("argc: " + argc);
+    spdlog::info(layerHeight);
+
+    cura::setLayerHeight(layerHeight);
+
+    if (fileSize == -1)
+    {
         spdlog::error("Invalid file size or no file size provided!");
         exit(1);
     }
 
-    char* buffer = (fileSize < 10000000) ? new char[fileSize] : (char*)malloc(fileSize);
+    char *buffer = (fileSize < 10000000) ? new char[fileSize] : (char *)malloc(fileSize);
     size_t bytesRead = 0;
     size_t totalBytes = 0;
 
-    const char* settings = "../CuraEngine/machines/definitions/creality_ender3.def.json";
+    const char *settings = "../CuraEngine/machines/definitions/creality_ender3.def.json";
 
     // Open the file V2:
-    FILE* file = fmemopen(buffer, fileSize, "w+");
+    FILE *file = fmemopen(buffer, fileSize, "w+");
 
-    if (file == nullptr) {
+    if (file == nullptr)
+    {
         perror("fmemopen");
         return EXIT_FAILURE;
     }
 
-    while ((bytesRead = fread(buffer, 1, fileSize, stdin)) > 0) {
+    while ((bytesRead = fread(buffer, 1, fileSize, stdin)) > 0)
+    {
         fwrite(buffer, 1, bytesRead, file);
     }
 
     rewind(file);
 
     std::cerr << std::boolalpha;
-    
+
     cura::Application::getInstance().run(settings, file, type);
 
     return 0;

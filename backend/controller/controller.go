@@ -15,6 +15,7 @@ func RegisterBackendHandlers(e *echo.Group, logger echo.Logger) {
 	api.POST("/", func(c echo.Context) error {
 		// Extract the file from the request:
 		file, err := c.FormFile("file")
+		layerHeight := c.FormValue("layerHeight")
 		if err != nil {
 			return c.JSON(utilities.CreateErrorResponse(400, "No file has been provided to the request"))
 		}
@@ -22,17 +23,17 @@ func RegisterBackendHandlers(e *echo.Group, logger echo.Logger) {
 		// Basic STL validation:
 		fileType, errResponse := model.ValidateSTLFile(file)
 		if errResponse != nil {
-			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message));
+			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message))
 		}
 
-		output, errResponse := model.SliceSTLFile(*fileType, file, logger)
+		output, errResponse := model.SliceSTLFile(*fileType, file, layerHeight, logger)
 		if errResponse != nil {
-			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message));
+			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message))
 		}
 
 		jsonOutput, errResponse := model.ParseSliceOutput(*output, file.Filename)
-		if (errResponse != nil) {
-			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message));
+		if errResponse != nil {
+			return c.JSON(utilities.CreateErrorResponse(errResponse.Code, errResponse.Message))
 		}
 
 		return c.JSON(http.StatusOK, jsonOutput)
@@ -40,7 +41,7 @@ func RegisterBackendHandlers(e *echo.Group, logger echo.Logger) {
 
 	api.GET("/", func(c echo.Context) error {
 		logger.Info("Healthcheck endpoint hit!")
-		
+
 		return c.NoContent(http.StatusOK)
 	})
 }
